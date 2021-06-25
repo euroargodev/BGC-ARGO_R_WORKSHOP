@@ -1,5 +1,5 @@
 show_trajectories <- function(float_ids=Setting$demo_float, color='multiple', 
-                              prof_ids=NULL) {
+                              prof_ids=NULL, return_ggplot=FALSE) {
   # show_trajectories  
   
   # This function is part of the
@@ -70,6 +70,13 @@ show_trajectories <- function(float_ids=Setting$demo_float, color='multiple',
     Mdata = loaded$Mdata
     
     g1 = plot_trajectories(Data=Data, color=color)
-    return(g1)
+    
+    if ( return_ggplot ) {
+      return(g1)
+    } else {
+      x11()
+      plot(g1)
+    }
+    
   }
 }

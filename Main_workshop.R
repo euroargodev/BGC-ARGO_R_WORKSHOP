@@ -130,7 +130,7 @@ names(data$Data[[paste0('F', WMO)]]) # show data that has been loaded into R
 do_pause()
 
 # Show the trajectory of the downloaded float
-show_trajectories (float_ids=WMO)
+show_trajectories(float_ids=WMO)
 
 do_pause()
 
@@ -231,17 +231,23 @@ print(paste('# of matching floats:',length(OSP_data$floats)))
 # files have already been downloaded) and then loads the data for plotting.
 # Adding the optional input pair 'color','multiple' will plot different
 # floats in different colors
-trajectory=show_trajectories(float_ids=OSP_data$floats
+trajectory = show_trajectories(float_ids = OSP_data$floats,
+                               return_ggplot = TRUE #do not plot and return a ggplot object
 ) # this plots different floats in different colors
-trajectory
+
+x11()# create a new window
+plot(trajectory) # plot the ggplot object
 
 # show domain of interest
-trajectory+ geom_rect( aes(xmin = lon_lim[1], 
-                           xmax = lon_lim[2],
-                           ymin = lat_lim[1],
-                           ymax = lat_lim[2]),
-                       color="black",fill=NA
+trajectory = trajectory + geom_rect( aes(xmin = lon_lim[1], 
+                                         xmax = lon_lim[2],
+                                         ymin = lat_lim[1],
+                                         ymax = lat_lim[2]),
+                                     color="black",fill=NA
 )
+
+x11()# create a new window
+plot(trajectory) # plot the ggplot object
 
 do_pause()
 
@@ -307,20 +313,25 @@ print(paste('# of matching floats:',length(HW_data$floats)))
 # Show trajectories for the matching floats, along with the geo limits
 # This function downloads the specified floats from the GDAC (unless the
 # files have already been downloaded) and then loads the data for plotting.
-# Adding the optional input pair 'color','multiple' will plot different
-# floats in different colors
 
-trajectory=show_trajectories(float_ids=HW_data$floats)  # this plots different floats in different colors
-trajectory
+trajectory = show_trajectories(float_ids=HW_data$floats, return_ggplot=TRUE)  # this plots different floats in different colors
+
+x11() # new window
+plot(trajectory)
 
 # show domain of interest
-trajectory+ geom_rect(
+trajectory = trajectory + geom_rect(
   aes(xmin = lon_lim[1], 
       xmax = lon_lim[2],
       ymin = lat_lim[1],
       ymax = lat_lim[2], 
-  ),color="black",fill=NA
+  ),
+  color="black",
+  fill=NA
 )
+
+x11() # new window
+plot(trajectory)
 
 do_pause()
 
