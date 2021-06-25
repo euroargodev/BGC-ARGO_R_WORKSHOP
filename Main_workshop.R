@@ -170,17 +170,17 @@ do_pause()
 show_sections(float_ids=WMO, 
               variables= c('NITRATE'),
               plot_mld=1,       # tells the function to plot mixed layer depth
-              raw=TRUE) # tells the function to plot raw data
+              raw="yes") # tells the function to plot raw data
 
 show_sections( float_ids=WMO, 
                variables= c('NITRATE'),
                plot_mld=1, #tells the function to plot mixed layer depth
-               raw=F) # tells the function to plot adjusted data (that is the default and could be left out in this call)
+               raw="no") # tells the function to plot adjusted data (that is the default and could be left out in this call)
 
 show_sections( float_ids=WMO ,
                variables= c('NITRATE'),
                plot_mld=1, #tells the function to plot mixed layer depth
-               raw=F,
+               raw="no",
                qc=c(1:2) # tells the function to plot good and probably-good data
 )
 
@@ -356,7 +356,7 @@ do_pause()
 show_sections( float_ids=HW_data$floats[5], 
                variables=c('PH_IN_SITU_TOTAL','DOXY'),
                plot_mld=1,   # tells the function to plot mixed layer depth
-               raw=TRUE # tells the function to plot mixed layer depth
+               raw="yes" # tells the function to plot raw (unadjusted) data
 ) # tells the function to plot raw (unadjusted) data
 
 do_pause()
@@ -366,7 +366,7 @@ do_pause()
 show_sections( float_ids=HW_data$floats[5], 
                variables=c('PH_IN_SITU_TOTAL','DOXY'),
                plot_mld=1,   # tells the function to plot mixed layer depth
-               raw=FALSE  # tells the function to plot adjusted data
+               raw="no"  # tells the function to plot adjusted data
 )
 
 
