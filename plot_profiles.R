@@ -1,12 +1,12 @@
 plot_profiles <- function(Data,
                           Mdata,
                           variables,
-                          method = NULL, # show all profiles per variable in one plot
-                          per_float = NULL,
-                          obs = NULL,
-                          raw = NULL,
+                          method = "all", # show all profiles per variable in one plot
+                          per_float = 1,
+                          obs = "off",
+                          raw = "no",
                           title_add = NULL,
-                          qc_flags = NULL) {
+                          qc_flags = 0:9) {
   # plot_profiles  
   #
   #This function is part of the
@@ -55,18 +55,6 @@ plot_profiles <- function(Data,
   # and A. Gray (UW))
   
   # Update 24 June 2021
-  
-  if (is.null(qc_flags)) {
-    if (raw == 'yes') {
-      # y for yes
-      qc_flags = 0:9 # use everything
-    }
-    else{
-      # adjusted data
-      qc_flags = 0:9
-      # use everything
-    }
-  }
 
 
   if (!method %in% c("all", "mean")) {

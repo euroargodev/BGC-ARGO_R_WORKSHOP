@@ -2,13 +2,13 @@
 
 show_profiles=function( profile_ids,
                         variables, 
-                        type=NULL, 
-                        obs=NULL,  
-                        qc_flags=NULL,
-                        raw=NULL, 
-                        method=NULL, 
-                        title_add=NULL,  
-                        per_float=NULL){
+                        type = "profiles", 
+                        obs = "off",  
+                        qc_flags = 0:9,
+                        raw = "no", 
+                        method = "all", 
+                        title_add = NULL,  
+                        per_float = 1 ){
   # show_profiles 
   #
   # This function is part of the
@@ -71,75 +71,26 @@ show_profiles=function( profile_ids,
   
   # Update 24 June 2021
   
-  
-  #if nargin < 2
-  #warning('Usage: show_profiles(profile_ids, variables, varargin)')
-  #end
-  
-  if ( is.null(profile_ids) ){ 
-    warning('no profiles specified')
-  }
-  
-  # set defaults
-  if (is.null(type)){
-    type="profiles"
-  }
-  
-  if (is.null(obs)){
-    obs="off"
-  }
-  
-  if (is.null(raw)){
-    raw="no"
-  }
-  
-  if (is.null(qc_flags)){
-    qc_flags=seq(0,9,1)
-  }
-  
-  if (is.null(method)){
-    method="all"
-  }
-  
-  if (is.null(per_float)){
-    per_float=1
-  }
-  
-  
   if ( min(qc_flags) < 0 | max(qc_flags)>9){
     warning('only QC flags 0..9 are allowed!')
   }
   
-  
   # convert requested variable to cell array if necessary (string was used)
-  if ( is.character(variables)){
-    variables=variables
-  }else{  
-    variables = as.character(variables)
-  }
+  variables = as.character(variables)
   
-  
-  if (type== 'profiles'){
+  if (type == 'profiles') {
     # profile IDs need to be converted to float IDs
     all_float_ids = Sprof$wmo[ profile_ids ]
-  } 
-  if (type== 'floats'){
+  } else if (type == 'floats') {
     all_float_ids = profile_ids;
+  } else {
+    warning('type must be either "profiles" or "floats"')
   }
   
-  if(is.null(qc_flags)){
-    if(raw=='yes'){ # y for yes
-      qc_flags=0:9 # use everything
-    }
-    else{ # adjusted data
-      qc_flags = 0:9; # use everything
-    }
-  }
-  
-  uniq_float_ids = unique(all_float_ids);
+  uniq_float_ids = unique(all_float_ids)
   
   # download Sprof files if necessary
-  good_float_ids = download_multi_floats(uniq_float_ids);
+  good_float_ids = download_multi_floats(uniq_float_ids)
   
   if ( is.null( good_float_ids) ){
     warning('no valid floats found')
@@ -152,8 +103,7 @@ show_profiles=function( profile_ids,
     Float_Data=load_float_data(good_float_ids, 
                                variables, 
                                float_profs=NULL);
-    
-    
+
   }  
   
   if (type== 'profiles'){
@@ -166,24 +116,21 @@ show_profiles=function( profile_ids,
       float_profs[[i]] =Sprof$fprofid[profile_ids[idx]]
     }
     
-    
-    Float_Data=load_float_data(float_ids=good_float_ids, 
-                               variables= variables, 
-                               float_profs=float_profs);
+    Float_Data=load_float_data(float_ids = good_float_ids, 
+                               variables = variables, 
+                               float_profs = float_profs);
     
   }
-  
-  
-  
-  plot_profiles(Data=  Float_Data$Data, 
-                Mdata=Float_Data$Mdata, 
-                variables,
-                method ,
-                per_float,
-                obs , 
-                raw, 
-                title_add,
-                qc_flags 
+
+  plot_profiles(Data =  Float_Data$Data, 
+                Mdata = Float_Data$Mdata, 
+                variables = variables,
+                method = method ,
+                per_float = per_float,
+                obs = obs, 
+                raw = raw, 
+                title_add = title_add,
+                qc_flags = qc_flags
    )
 
   
