@@ -1,6 +1,6 @@
 show_sections <- function(float_ids=Setting$demo_float, variables="DOXY",
                           plot_isopyc=1, plot_mld=0, max_depth=NULL, raw="no", 
-                          obs="on", qc_flags=0:9) {
+                          obs="off", qc_flags=0:9) {
   # show_sections  
   #
   # This function is part of the

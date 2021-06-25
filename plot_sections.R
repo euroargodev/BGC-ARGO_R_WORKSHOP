@@ -2,7 +2,7 @@ if (!require("ggplot2")) { install.packages("ggplot2"); library(ggplot2) }
 if (!require("metR")) { install.packages("metR"); library(metR) }
 
 plot_sections <- function(Data, Mdata, variables, nvars, plot_isopyc, plot_mld, 
-                          max_depth=NULL, raw="no", obs="on", qc_flags=0:9) {
+                          max_depth=NULL, raw="no", obs="off", qc_flags=0:9) {
 
   # plot_sections  
   #
@@ -187,6 +187,7 @@ plot_sections <- function(Data, Mdata, variables, nvars, plot_isopyc, plot_mld,
              y = "Pressure (dbar)",
              fill = units)
       
+      x11()
       plot(g1)
     }
   }
