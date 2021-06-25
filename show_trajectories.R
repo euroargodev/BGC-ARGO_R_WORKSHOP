@@ -1,5 +1,5 @@
-show_trajectories <- function(float_ids=Setting$demo_float, color=NULL, 
-                              prof_ids=numeric(0)) {
+show_trajectories <- function(float_ids=Setting$demo_float, color='multiple', 
+                              prof_ids=NULL) {
   # show_trajectories  
   
   # This function is part of the
@@ -41,41 +41,33 @@ show_trajectories <- function(float_ids=Setting$demo_float, color=NULL,
   # (H. Frenzel, J. Sharp, A. Fassbender (NOAA-PMEL),
   # J. Plant, T. Maurer, Y. Takeshita (MBARI), D. Nicholson (WHOI),
   # and A. Gray (UW))
-  
-  # Update 24 June 2021
-  
-  
-  # Last update: June 24, 2021
 
-  if ( length(prof_ids) == 0 ) {
-    float_profs = numeric(0)
+  # Last update: June 24, 2021
+  
+  # download Sprof files if necessary
+  good_float_ids = download_multi_floats(float_ids)
+
+  if ( is.null(prof_ids) ) {
+    float_profs = NULL
   } else {
     # convert global profile IDs to individual (per float) profile IDs
     float_profs = NULL
     all_float_ids = Sprof$wmo[prof_ids] # get all float ids
-    for (i in 1:length(float_ids)) {
-      idx = (all_float_ids == float_ids[i]) # index based on float id
+    for (i in 1:length(good_float_ids)) {
+      idx = (all_float_ids == good_float_ids[i]) # index based on float id
       # obtain profiles of that float to plot
       float_profs[[i]] = Sprof$fprofid[prof_ids[idx]]
     }
   }
-  
-  # download Sprof files if necessary
-  good_float_ids = download_multi_floats(float_ids)
   
   if ( length(good_float_ids) == 0 ) {
     warning('no valid floats found')
     return(1)
   } else {
     # meta data return values and observations are not needed here
-    #loaded = load_float_data(good_float_ids, float_profs)
-    loaded = load_float_data(good_float_ids)
+    loaded = load_float_data(float_ids=good_float_ids, float_profs=float_profs)
     Data = loaded$Data
     Mdata = loaded$Mdata
-    
-    if(is.null(color)) {
-      color<-'multiple'
-    }
     
     g1 = plot_trajectories(Data=Data, color=color)
     return(g1)

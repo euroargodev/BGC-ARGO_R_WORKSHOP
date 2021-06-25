@@ -85,39 +85,31 @@ plot_trajectories <- function(Data, color) {
     df = rbind(df, df_i)
   }
   
-  g1 = ggplot(df, mapping=aes(x=LONGITUDE, y=LATITUDE, group=WMO))
+  g1 = ggplot(df, mapping=aes(x=LONGITUDE, y=LATITUDE, group=WMO)) +
+    theme_bw() +
+    geom_polygon(data=world, aes(x=long, y=lat, group=group), 
+                 fill="#dddddd")
 
   if (color=='multiple') {
     g1 = g1 +
-      theme_bw() +
-      geom_polygon(data=world, aes(x=long, y=lat, group=group), 
-                   fill="#dddddd") +
       geom_path(aes(color=WMO)) +
-      geom_point(aes(color=WMO)) +
-      coord_cartesian(xlim=lonlim, ylim=latlim) +
-      theme(axis.title.x = element_text(size=12, colour="black", face="bold", family="serif"), 
-            axis.text.x = element_text(size=12, colour="black", face="bold", family="serif"),
-            axis.title.y = element_text(size=12, colour="black", face="bold", family="serif"), 
-            axis.text.y = element_text(size=12, colour="black", face="bold", family="serif") ) +
-      labs(x = expression(bold(Longitude~"("~"degree"~E~")")),
-           y = expression (bold(Latitude~"("~"degree"~N~")")) )+
-      theme(legend.text = element_text(size=12, face='bold', family="serif"))+labs(colour=expression(bold("WMO ID")),size=5, family="serif")
-  }else{
+      geom_point(aes(color=WMO))
+   } else {
     g1 = g1 +
-      theme_bw() +
-      geom_polygon(data=world, aes(x=long, y=lat, group=group), 
-                   fill="#dddddd") +
       geom_path(color=color) +
-      geom_point(color=color) +
-      coord_cartesian(xlim=lonlim, ylim=latlim) +
-      theme(axis.title.x = element_text(size=12, colour="black", face="bold", family="serif"), 
-            axis.text.x = element_text(size=12, colour="black", face="bold", family="serif"),
-            axis.title.y = element_text(size=12, colour="black", face="bold", family="serif"), 
-            axis.text.y = element_text(size=12, colour="black", face="bold", family="serif") ) +
-      labs(x = expression(bold(Longitude~"("~"degree"~E~")")),
-           y = expression (bold(Latitude~"("~"degree"~N~")")) )+
-      theme(legend.text = element_text(size=12, face='bold', family="serif"))+labs(colour=expression(bold("WMO ID")),size=5, family="serif")
-  }
+      geom_point(color=color)
+   }
+  
+  g1 = g1 +
+    coord_cartesian(xlim=lonlim, ylim=latlim) +
+    theme(axis.title.x = element_text(size=12, colour="black", face="bold", family="serif"), 
+          axis.text.x = element_text(size=12, colour="black", face="bold", family="serif"),
+          axis.title.y = element_text(size=12, colour="black", face="bold", family="serif"), 
+          axis.text.y = element_text(size=12, colour="black", face="bold", family="serif") ) +
+    labs(x = expression(bold(Longitude~"("~"degrees"~E~")")),
+         y = expression (bold(Latitude~"("~"degrees"~N~")")) ) +
+    theme(legend.text = element_text(size=12, face='bold', family="serif")) +
+    labs(colour=expression(bold("WMO ID")),size=5, family="serif")
    
   return(g1)
   
