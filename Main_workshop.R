@@ -34,30 +34,33 @@ if (!require("lubridate")) install.packages("lubridate"); library(lubridate) # c
 if (!require("Matrix")) install.packages("Matrix"); library(Matrix) # create reduced-size matrix to deal with the Synthetic profile Index
 if (!require("ncdf4")) install.packages("ncdf4"); library(ncdf4) # deal with netcdf files
 
+# Fill here the path to the code directory, you can instead set the code
+# directory as the working directory with setwd()
+path_code = ""
 
 
 # Load the functions --------------------------------
 
-source(paste("initialize_argo.R",sep=""))
-source(paste("try_download.R",sep=""))
-source(paste("do_download.R",sep=""))
-source(paste("download_float.R",sep=""))
-source(paste("download_multi_floats.R",sep=""))
-source(paste("check_dir.R",sep=""))
-source(paste("get_var_name_units.R",sep=""))
-source(paste("select_profiles.R",sep=""))
-source(paste("load_float_data.R",sep=""))
-source(paste("plot_trajectories.R",sep=""))
-source(paste("get_lon_lat_lims.R",sep=""))
-source(paste("show_trajectories.R",sep=""))
-source(paste("do_pause.R",sep=""))
-source(paste("depth_interp.R",sep=""))
-source(paste("calc_auxil.R",sep=""))
-source(paste("get_multi_profile_mean.R",sep=""))
-source(paste("show_the_profiles.R",sep=""))
-source(paste("plot_profiles.R",sep=""))
-source(paste("show_sections.R",sep=""))
-source(paste("plot_sections.R",sep=""))
+source(paste0(path_code, "initialize_argo.R"))
+source(paste0(path_code, "try_download.R"))
+source(paste0(path_code, "do_download.R"))
+source(paste0(path_code, "download_float.R"))
+source(paste0(path_code, "download_multi_floats.R"))
+source(paste0(path_code, "check_dir.R"))
+source(paste0(path_code, "get_var_name_units.R"))
+source(paste0(path_code, "select_profiles.R"))
+source(paste0(path_code, "load_float_data.R"))
+source(paste0(path_code, "plot_trajectories.R"))
+source(paste0(path_code, "get_lon_lat_lims.R"))
+source(paste0(path_code, "show_trajectories.R"))
+source(paste0(path_code, "do_pause.R"))
+source(paste0(path_code, "depth_interp.R"))
+source(paste0(path_code, "calc_auxil.R"))
+source(paste0(path_code, "get_multi_profile_mean.R"))
+source(paste0(path_code, "show_the_profiles.R"))
+source(paste0(path_code, "plot_profiles.R"))
+source(paste0(path_code, "show_sections.R"))
+source(paste0(path_code, "plot_sections.R"))
 
 # Exercise 0: Initialize --------------------------------------------------
 # This function defines standard settings and paths and creates Index
@@ -109,7 +112,7 @@ WMO = 5904859
 success = download_float(WMO)
 
 #  Display attributes, dimensions, and variables available in the NetCDF
-float_file=nc_open(paste(path_code,"Profiles/", WMO,"_Sprof.nc",sep=''))
+float_file = nc_open(paste0("Profiles/", WMO,"_Sprof.nc"))
 float_file
 
 # Extract informational data from the NetCDF
