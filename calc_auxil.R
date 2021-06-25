@@ -1,4 +1,4 @@
-if (!require("gsw")) install.packages("gsw"); library(gsw)
+if (!require("gsw")) { install.packages("gsw"); library(gsw) }
 
 calc_auxil <- function(Data, calc_dens=0, calc_mld_temp=0, temp_thresh=0.2, calc_mld_dens=0, dens_thresh=0.03){
 

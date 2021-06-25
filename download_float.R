@@ -1,5 +1,5 @@
-if (!require("ncdf4")) install.packages("ncdf4"); library(ncdf4)
-if (!require("lubridate")) install.packages("lubridate"); library(lubridate)
+if (!require("ncdf4")) { install.packages("ncdf4"); library(ncdf4) }
+if (!require("lubridate")) { install.packages("lubridate"); library(lubridate) }
 
 download_float<-function(floatid) {
   

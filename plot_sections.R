@@ -1,5 +1,5 @@
-if (!require("ggplot2")) install.packages("ggplot2"); library(ggplot2)
-if (!require("metR")) install.packages("metR"); library(metR)
+if (!require("ggplot2")) { install.packages("ggplot2"); library(ggplot2) }
+if (!require("metR")) { install.packages("metR"); library(metR) }
 
 plot_sections <- function(Data, Mdata, variables, nvars, plot_isopyc, plot_mld, 
                           max_depth=NULL, raw=FALSE, obs="on", qc_flags=0:9) {

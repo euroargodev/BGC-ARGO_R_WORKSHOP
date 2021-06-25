@@ -1,7 +1,7 @@
-if (!require("gsw")) install.packages("gsw"); library(gsw)
-if (!require("R.utils")) install.packages("R.utils"); library(R.utils) # to gunzip S index file
-if (!require("lubridate")) install.packages("lubridate"); library(lubridate) # convert date from Sprof to date object
-if (!require("Matrix")) install.packages("Matrix"); library(Matrix) # create reduced-size matrix
+if (!require("gsw")) { install.packages("gsw"); library(gsw) }
+if (!require("R.utils")) { install.packages("R.utils"); library(R.utils) } # to gunzip S index file
+if (!require("lubridate")) { install.packages("lubridate"); library(lubridate) } # convert date from Sprof to date object
+if (!require("Matrix")) { install.packages("Matrix"); library(Matrix) } # create reduced-size matrix
 
 
 initialize_argo <- function() {

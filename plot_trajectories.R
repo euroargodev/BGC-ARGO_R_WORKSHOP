@@ -1,5 +1,5 @@
-if (!require("ggplot2")) install.packages("ggplot2"); library(ggplot2)
-if (!require("maps")) install.packages("maps"); library(maps)
+if (!require("ggplot2")) { install.packages("ggplot2"); library(ggplot2) }
+if (!require("maps")) { install.packages("maps"); library(maps) }
 
 plot_trajectories <- function(Data, color) {
   # plot_trajectories  
