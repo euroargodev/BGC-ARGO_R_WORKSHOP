@@ -110,8 +110,11 @@ plot_sections <- function(Data, Mdata, variables, nvars, plot_isopyc, plot_mld,
   # vertical interpolation to depths with regular intervals
   for ( f in 1:nfloats ) {
     
+    prs_res = 2
+    
     Datai = depth_interp(Data[[floats[f]]], qc_flags, calc_dens=calc_dens, 
-                calc_mld_temp=(plot_mld==1), calc_mld_dens=(plot_mld==2))
+                calc_mld_temp=(plot_mld==1), calc_mld_dens=(plot_mld==2),
+                prs_res=prs_res)
     
     df = NULL
     for (name in names(Datai)) {
@@ -123,6 +126,34 @@ plot_sections <- function(Data, Mdata, variables, nvars, plot_isopyc, plot_mld,
     }
     df = data.frame(df)
     
+    # Create min/max parameters to use the geom_rect() function that can plot
+    # rectangles with variable width/height
+    
+    if ("PRES_ADJUSTED" %in% names(Datai)) {
+      df$ymin = df$PRES_ADJUSTED - prs_res/2
+      df$ymax = df$PRES_ADJUSTED + prs_res/2
+    } else {
+      df$ymin = df$PRES - prs_res/2
+      df$ymax = df$PRES + prs_res/2
+    }
+    
+    nc = ncol(Datai$TIME)
+    
+    xvec = as.Date(Datai$TIME[1,])
+    xmin = as.Date(rep(NA, nc))
+    xmax = as.Date(rep(NA, nc))
+
+    xmin[2:(nc-1)] = xvec[2:(nc-1)] - ( xvec[2:(nc-1)] - xvec[1:(nc-2)] ) / 2
+    xmax[2:(nc-1)] = xvec[2:(nc-1)] + ( xvec[3:nc] - xvec[2:(nc-1)] ) / 2
+    
+    xmin[1] = xvec[1] - ( xvec[2] - xvec[1] ) / 2
+    xmax[nc] = xvec[nc] + ( xvec[nc] - xvec[nc-1] ) / 2
+    xmin[nc] = xmax[nc-1]
+    xmax[1] = xmin[2]
+
+    df$xmin = rep(xmin, each=nrow(Datai$TIME))
+    df$xmax = rep(xmax, each=nrow(Datai$TIME))
+    
     for ( v in 1:nvars ) {
       
       if ("PRES_ADJUSTED" %in% names(Datai)) {
@@ -132,8 +163,8 @@ plot_sections <- function(Data, Mdata, variables, nvars, plot_isopyc, plot_mld,
       }
       
       g1 = g1 +
-        geom_raster(aes(fill=.data[[variables[v]]])) +
-        #scale_y_reverse() +
+        geom_rect(aes(fill=.data[[variables[v]]], xmin=xmin, xmax=xmax,
+                      ymin=ymin, ymax=ymax)) +
         scale_fill_viridis_c() +
         theme_bw()
       
