@@ -184,8 +184,12 @@ load_float_data <- function (float_ids, variables=NULL, float_profs=NULL) {
     # AND SAVE AS 'TIME'
     ## CCC to check date format
 
-    Data[[FWMO]]$TIME = matrix(as.character(as.Date(Data[[FWMO]]$JULD, origin=as.Date("1950-01-01"))),
-                               nrow=n_levels, ncol=n_prof)
+    #Data[[FWMO]]$TIME = matrix(as.character(as.Date(Data[[FWMO]]$JULD, origin=as.Date("1950-01-01"))),
+    #                           nrow=n_levels, ncol=n_prof)
+    Data[[FWMO]]$TIME = matrix(nrow=n_levels, ncol=n_prof, 
+      as.character(as.POSIXct(Data[[FWMO]]$JULD*3600*24, 
+                              origin=as.Date("1950-01-01"), tz="UTC"))
+      )
 
     names[length(names)+1] = 'TIME' # Add 'TIME' to list of variable names
     

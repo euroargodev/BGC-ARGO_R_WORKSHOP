@@ -17,7 +17,7 @@ select_profiles <- function(lon_lim=c(-180,180), lat_lim=c(-90, 90),
   # start_date : start date
   # end_date   : end date
   #            * Dates should be in one of the following formats:
-  #            [YYYY MM DD HH MM SS] or [YYYY MM DD]
+  #            "YYYY-MM-DD HH:MM-SS" or "YYYY-MM-DD"
   #
   # Optional inputs (key,value pairs):
   #
@@ -74,9 +74,8 @@ select_profiles <- function(lon_lim=c(-180,180), lat_lim=c(-90, 90),
   lon_lim[lon_lim < -180] = lon_lim[lon_lim < -180] + 360
   
   # ADJUST INPUT DATES TO DATENUM FORMAT
-  dn1 = as.Date(start_date)
-  dn2 = as.Date(end_date)
-  #TODO: include hours/minutes/seconds ?
+  dn1 = as.POSIXct(start_date, tz="UTC")
+  dn2 = as.POSIXct(end_date, tz="UTC")
   
   # GET INDEX OF PROFILES WITHIN USER-SPECIFIED GEOGRAPHIC POLYGON
   if ( lon_lim[1] > lon_lim[2] ) { # crossing the dateline
@@ -91,7 +90,7 @@ select_profiles <- function(lon_lim=c(-180,180), lat_lim=c(-90, 90),
   }
   
   # Find index of dates that are within the time window
-  indate = (as.Date(Sprof$date) >= dn1 & as.Date(Sprof$date) <= dn2)
+  indate = (Sprof$date >= dn1 & Sprof$date <= dn2)
   
   # SELECT BY SENSOR
   if ( is.null(sensor) ) {

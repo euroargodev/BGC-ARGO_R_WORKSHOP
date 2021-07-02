@@ -119,7 +119,7 @@ plot_sections <- function(Data, Mdata, variables, nvars, plot_isopyc, plot_mld,
     df = NULL
     for (name in names(Datai)) {
       if (name == "TIME") {
-        df[[name]] = as.Date(Datai[[name]])
+        df[[name]] = as.POSIXct(Datai[[name]], tz="UTC")
       } else {
         df[[name]] = as.vector(Datai[[name]])
       }
@@ -137,11 +137,12 @@ plot_sections <- function(Data, Mdata, variables, nvars, plot_isopyc, plot_mld,
       df$ymax = df$PRES + prs_res/2
     }
     
-    nc = ncol(Datai$TIME)
+    nna = which(!is.na(Datai$TIME[1,]))
+    nc = length(nna)
     
-    xvec = as.Date(Datai$TIME[1,])
-    xmin = as.Date(rep(NA, nc))
-    xmax = as.Date(rep(NA, nc))
+    xvec = as.POSIXct(Datai$TIME[1,nna], tz="UTC")
+    xmin = as.POSIXct(rep(NA, nc), tz="UTC")
+    xmax = as.POSIXct(rep(NA, nc), tz="UTC")
 
     xmin[2:(nc-1)] = xvec[2:(nc-1)] - ( xvec[2:(nc-1)] - xvec[1:(nc-2)] ) / 2
     xmax[2:(nc-1)] = xvec[2:(nc-1)] + ( xvec[3:nc] - xvec[2:(nc-1)] ) / 2
@@ -150,9 +151,14 @@ plot_sections <- function(Data, Mdata, variables, nvars, plot_isopyc, plot_mld,
     xmax[nc] = xvec[nc] + ( xvec[nc] - xvec[nc-1] ) / 2
     xmin[nc] = xmax[nc-1]
     xmax[1] = xmin[2]
+    
+    full_xmin = as.POSIXct(rep(NA, ncol(Datai$TIME)), tz="UTC")
+    full_xmax = as.POSIXct(rep(NA, ncol(Datai$TIME)), tz="UTC")
+    full_xmin[nna] = xmin
+    full_xmax[nna] = xmax
 
-    df$xmin = rep(xmin, each=nrow(Datai$TIME))
-    df$xmax = rep(xmax, each=nrow(Datai$TIME))
+    df$xmin = rep(full_xmin, each=nrow(Datai$TIME))
+    df$xmax = rep(full_xmax, each=nrow(Datai$TIME))
     
     for ( v in 1:nvars ) {
       
@@ -175,7 +181,7 @@ plot_sections <- function(Data, Mdata, variables, nvars, plot_isopyc, plot_mld,
       if (obs == "on") {
         index = which(!is.na(Data[[floats[f]]][[variables[v]]]))
         g1 = g1 + geom_point(aes(x = x, y = y),
-                             data = data.frame(x = as.Date(Data[[floats[f]]]$TIME[index]),
+                             data = data.frame(x = as.POSIXct(Data[[floats[f]]]$TIME[index], tz="UTC"),
                                                y = as.vector(Data[[floats[f]]]$PRES[index])),
                              size=0.1, alpha=0.2
         )
@@ -183,13 +189,13 @@ plot_sections <- function(Data, Mdata, variables, nvars, plot_isopyc, plot_mld,
       
       if (plot_mld == 1) {
         g1 = g1 + geom_line(aes(x = x, y = y),
-                            data = data.frame(x = as.Date(Datai$TIME[1,]),
+                            data = data.frame(x = as.POSIXct(Datai$TIME[1,], tz="UTC"),
                                               y = as.vector(Datai$MLD_TEMP)),
                             size=2
         )
       } else if (plot_mld == 2) {
         g1 = g1 + geom_line(aes(x = x, y = y),
-                            data = data.frame(x = as.Date(Datai$TIME[1,]),
+                            data = data.frame(x = as.POSIXct(Datai$TIME[1,], tz="UTC"),
                                               y = as.vector(Datai$MLD_DENS)),
                             size=2
         )
