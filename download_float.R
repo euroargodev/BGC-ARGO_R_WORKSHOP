@@ -50,7 +50,7 @@ download_float<-function(floatid) {
   float_idx = ind[which(Float$wmoid %in% floatid)]
   
   if (length(float_idx)==0) {
-    stop(paste('Float', floatid,"was not found!"))
+    print(paste('Float', floatid,"was not found!"))
   }
   
   
