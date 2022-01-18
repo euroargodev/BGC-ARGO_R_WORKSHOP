@@ -1,64 +1,60 @@
-show_trajectories <- function(float_ids=Setting$demo_float, color='multiple', 
-                              prof_ids=NULL, return_ggplot=FALSE) {
-  # show_trajectories  
+show_trajectories <- function(float_ids=Setting$demo_float, 
+                              color='multiple',
+                              float_profs=NULL,
+                              position=NULL,
+                              title="Float trajectories",
+                              return_ggplot=FALSE
+) {
   
-  # This function is part of the
-  # GO-BGC workshop R tutorial and R toolbox for accessing BGC Argo float data.
+  # DESCRIPTION:
+  #   This is function is an intermediary function that downloads profiles for at least
+  #   one given float and calls plot_trajectories to create the plot.
   #
-  # It is an intermediary function that downloads profiles for at least
-  # one given float and calls plot_trajectories to create the plot.
-  #
-  # Inputs:
+  # INPUT:
   #   float_ids : WMO ID(s) of one or more floats 
   #               (if not set: Settings.demo_float is used as a demo)
   #
-  # Optional inputs:
-  #   'color',color : color (string) can be either 'multiple' (different
+  # OPTIONAL INPUTS:
+  #   color='multiple' or 'red/blue/green'  : color (string) can be either 'multiple' (different
   #                   colors for different floats), or any standard R
   #                   color descriptor ('red', 'blue', 'green', 'black' etc.)
   #                   (all trajectories will be plotted in the same color)
-  #  'prof_ids',ids : ids is an array with the global indices of the
-  #                   selected profiles, as returned by function
-  #                   select_profiles - use this optional argument if you
-  #                   don't want to plot the full trajectories of the
-  #                   given floats, but only those that match spatial
-  #                   and/or temporal constraints
+  #   float_profs : float profile is an array with the per-float indices 
+  #                 as returned by function "select_profiles";   
+  #                 use this optional argument if you
+  #                 don't want to plot the full trajectories of the
+  #                 given floats, but only those locations that match
+  #                 spatial and/or temporal constraints
   #
-  # Output:
+  #   position='first' or 'last:  show only the selected position (either 'first' or
+  #                             'last')
+  #   title          : title for the plot (default: "Float trajectories")
+  #   return_ggplot=’TRUE‘ or 'FALSE' : FALSE' (by default) returns the plot to X11; 'TRUE'
+  #                  returns the plot to the ggplot panel if setting to "TRUE"; By default,
+  #                               
+  #
+  # OUPUT:
   #   good_float_ids : array of the float IDs whose Sprof files were
   #                    successfully downloaded or existed already
   #
+  # UPDATE RECORD: 
+  #   Version 1:   June 2021 
+  #   Version 1.1: January 2022 
   #
   # CITATION:
-  # BGC-Argo-R: A R toolbox for accessing and visualizing
-  # Biogeochemical Argo data,
-  #
-  # AUTHORS: 
-  # M. Cornec (LOV), Y. Huang (NOAA-PMEL), Q. Jutard (OSU ECCE TERRA), 
-  # R. Sauzede (IMEV) and C. Schmechtig (OSU ECCE TERRA),
-  #
-  # Adapted from the Matlab toolbox BGC-Argo-Mat:  https://doi.org/10.5281/zenodo.4971318
-  # (H. Frenzel, J. Sharp, A. Fassbender (NOAA-PMEL),
-  # J. Plant, T. Maurer, Y. Takeshita (MBARI), D. Nicholson (WHOI),
-  # and A. Gray (UW))
-
-  # Last update: June 24, 2021
+  #   M. Cornec (LOV), Y. Huang (NOAA-PMEL), Q. Jutard (OSU ECCE TERRA), R. Sauzede (IMEV) and 
+  #   C. Schmechtig (OSU ECCE TERRA), 2021.
+  #   BGC-Argo-R: A R toolbox for accessing and visualizing Biogeochemical Argo data. 
+  #   Zenodo. http://doi.org/10.5281/zenodo.5028139
+  
+  
+  # make sure Settings is initialized
+  if (exists("Setting")==F) {
+    initialize_argo()
+  }
   
   # download Sprof files if necessary
   good_float_ids = download_multi_floats(float_ids)
-
-  if ( is.null(prof_ids) ) {
-    float_profs = NULL
-  } else {
-    # convert global profile IDs to individual (per float) profile IDs
-    float_profs = NULL
-    all_float_ids = Sprof$wmo[prof_ids] # get all float ids
-    for (i in 1:length(good_float_ids)) {
-      idx = (all_float_ids == good_float_ids[i]) # index based on float id
-      # obtain profiles of that float to plot
-      float_profs[[i]] = Sprof$fprofid[prof_ids[idx]]
-    }
-  }
   
   if ( length(good_float_ids) == 0 ) {
     warning('no valid floats found')
@@ -67,9 +63,25 @@ show_trajectories <- function(float_ids=Setting$demo_float, color='multiple',
     # meta data return values and observations are not needed here
     loaded = load_float_data(float_ids=good_float_ids, float_profs=float_profs)
     Data = loaded$Data
-    Mdata = loaded$Mdata
     
-    g1 = plot_trajectories(Data=Data, color=color)
+    if(!is.null(position)){
+      nfloats = length(Data)
+      if(position=="first"){
+        for (f in 1:nfloats){
+          #only lon/lat fields are used by plot_trajectories
+          Data[[f]]$LONGITUDE<-Data[[f]]$LONGITUDE[,1]
+          Data[[f]]$LATITUDE<-Data[[f]]$LATITUDE[,1]
+        }
+          
+      } else if(position=="last"){
+        for (f in 1:nfloats){
+          Data[[f]]$LONGITUDE<-Data[[f]]$LONGITUDE[,ncol(Data[[f]]$LONGITUDE)]
+          Data[[f]]$LATITUDE<-Data[[f]]$LATITUDE[,ncol(Data[[f]]$LATITUDE)]
+        }
+      }
+    }
+    
+    g1 = plot_trajectories(Data=Data, color=color, title=title)
     
     if ( return_ggplot ) {
       return(g1)

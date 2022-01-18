@@ -1,58 +1,113 @@
-load_float_data <- function (float_ids, variables=NULL, float_profs=NULL) {
-  # load_floats  This function is part of the
-  # GO-BGC workshop Matlab tutorial for accessing BGC Argo float data.
+load_float_data <- function (float_ids, variables=NULL, float_profs=NULL,format=NULL) {
+  
+  
+  
+  # DESCRIPTION: 
+  #   This function loads data of at least one specified float.
   #
-  # This function loads data of at least one specified float.
+  # INPUTS:
+  #   float_ids: WMO ID of one or more floats
   #
-  # Inputs:
-  #   float_ids   : WMO ID of one or more floats
-  #                 (if not set: a default float is used as a demo)
+  # OPTIONAL INPUTS:
+  #   variables: cell array with variable names to be loaded (use 'ALL'
+  #                  # to load all available variables, which may differ by
+  #                  float)
+  #   float_profs : float profile is an array with the per-float indices 
+  #                 as returned by function "select_profiles" 
+  #                
+  #   format= 'dataframe' :    
+  #                 specific the format of data loaded (use 'dataframe'
+  #                 to export the data in the format of "data frame" 
+  #                 (if not set, the default output is a "list" with multiple matrix)
   #
-  # Optional inputs:
-  #   variables   : cell array with variable names to be loaded
-  #   float_profs : cell array with IDs of selected profiles (per float,
-  #                 not global)
-  #
-  # Output:
-  #   Data        : struct with the requested variables (including QC flags.
+  # OUTPUTS:
+  #   Output_1 (if "format" option is not be specified):
+  #    Data        : struct with the requested variables (including QC flags.
   #                 adjusted values if available) and general ones
   #                 (LONGITUDE,LATITUDE,JULD)
-  #   Mdata       : struct with meta data (WMO_NUMBER)
+  #    Mdata       : struct with meta data (WMO_NUMBER)
+  #
+  #   Output_2 (if "format" option is set to "dataframe"):
+  #    Data: A data frame including all floats data
+  #          Note: The data will be exported as a 
+  #          list containing multiple data frame for each float data if 
+  #          the length of merged data frame exceeds the  
+  #          memory limit of data frame. 
+  #
+  # UPDATE RECORD: 
+  #   Version 1:   June 2021 
+  #   Version 1.1: January 2022 
+  #
+  # CITATION:
+  #   M. Cornec (LOV), Y. Huang (NOAA-PMEL), Q. Jutard (OSU ECCE TERRA), R. Sauzede (IMEV) and 
+  #   C. Schmechtig (OSU ECCE TERRA), 2021.
+  #   BGC-Argo-R: A R toolbox for accessing and visualizing Biogeochemical Argo data. 
+  #   Zenodo. http://doi.org/10.5281/zenodo.5028139
+  
+    
 
+  
+  if (exists("Setting")==F) {
+    initialize_argo()
+  }
+  
+  add_pres = 0;# Default: do not add 'PRES' to list of variables
+  
+  
+  
+  if ( is.null   (variables)  ){ # Load all the parameters if "variables" are not specific
+    
+    variables="ALL"
+    
+  } else{
+    if (  !is.element('PRES', variables)  ){
+      add_pres = 1;
+    }
+  }
+  
+  if ( is.null   (format)  ){ # Set to export the data in the format of listif "format" are not specific
+    
+    format="list"
+    
+  }
+  
   # only some variables are always loaded, others only by request
-  all_vars = c('CYCLE_NUMBER', 'DIRECTION', 'JULD', 'JULD_QC', 
-      'JULD_LOCATION','LATITUDE','LONGITUDE','PARAMETER_DATA_MODE',
-      'PARAMETER')
 
-  if (!is.null(variables)) {
-    variables[length(variables)+1] = 'PRES'
-    all_vars[length(all_vars)+1] = 'PROFILE_PRES_QC'
-  } 
+  base_vars = c('CYCLE_NUMBER', 'DIRECTION', 'JULD', 'JULD_QC', 
+                'JULD_LOCATION','LATITUDE','LONGITUDE','POSITION_QC',
+                'PARAMETER')
+
+  if ( any(variables=="ALL")  ) { 
+    use_all_vars = 1;
+    base_vars[length(base_vars )+1] = 'PROFILE_PRES_QC';
+    
+  } else{
+    
+    use_all_vars = 0
+    
+    if (add_pres==1){ #if no variables are specified (e.g., to plot trajectories only),
+                     # loading pressure and associated variables is not needed
+      variables[length(variables )+1] = 'PRES';
+      base_vars[length(base_vars )+1] = 'PROFILE_PRES_QC';
+    }
+ 
+    add_vars = is.element(Setting$avail_vars , variables);
+    new_vars = Setting$avail_vars [add_vars];
+    all_vars = combine_variables(base_vars, new_vars)
+    all_vars = unique(all_vars)
+    
+  }
+  
 
   # INITIALIZE DATA FRAME FOR Data OUTPUT
   Data = NULL
   Mdata = NULL
-
-  add_vars = is.element(Setting$avail_vars, variables)
-  new_vars = Setting$avail_vars[add_vars]
-
-  # always include all associated variables
-  if (!all(add_vars == FALSE)) { # There is something to add 
-    for ( i in 1:length(new_vars) ) {
-      all_vars[length(all_vars)+1] = new_vars[i]
-      all_vars[length(all_vars)+1] = paste0(new_vars[i], '_QC')
-      if (new_vars[i] != 'PRES') {
-        all_vars[length(all_vars)+1] = paste0(new_vars[i], '_dPRES')
-      }
-      all_vars[length(all_vars)+1] = paste0(new_vars[i], '_ADJUSTED')
-      all_vars[length(all_vars)+1] = paste0(new_vars[i], '_ADJUSTED_QC')
-      all_vars[length(all_vars)+1] = paste0(new_vars[i], '_ADJUSTED_ERROR')
-    }
-  } ## enf of something to add
-
+  
   # download Sprof files if necessary
   good_float_ids = download_multi_floats(float_ids)
 
+  
+  
   # LOOP TO IMPORT PROFILES AND EXTRACT VARIABLES
   for ( n in 1:length(good_float_ids)) {
     floatnum = good_float_ids[n] 
@@ -60,12 +115,24 @@ load_float_data <- function (float_ids, variables=NULL, float_profs=NULL) {
     FWMO = paste0('F',floatnum)
     
     # LOAD VARIABLES FROM FILE
-    info = nc_open(filename)	
-    dims = info$dim
+    info = nc_open(filename)	 #  Read netcdf information
 
-    n_prof = dims$N_PROF$len
-    n_param = dims$N_PARAM$len
-    n_levels = dims$N_LEVELS$len
+
+    if ( use_all_vars==1 ){ # Load the all variables 
+      
+      these_vars =  names(info$var) 
+      add_vars = is.element(Setting$avail_vars, these_vars)
+      new_vars = Setting$avail_vars[add_vars]
+      all_vars = combine_variables(base_vars, new_vars)
+      all_vars = unique(all_vars)
+    
+    
+    }
+    
+    dims=get_dims(filename)
+    n_prof = dims$n_prof
+    n_param =dims$n_param
+    n_levels = dims$n_levels
 
     amt = length(all_vars)
 
@@ -76,58 +143,69 @@ load_float_data <- function (float_ids, variables=NULL, float_profs=NULL) {
     Mdata[[FWMO]] = NULL
 
     for (l in 1:amt) {
-
-      # Read in data
-	    Data[[FWMO]][[names[l]]] = ncvar_get(info,names[l])
-      Mdata[[FWMO]][[mnames[l]]] = Data[[FWMO]][[names[l]]]
-
-      # For measured variables
-      if (length(info$var[[names[l]]]$dimids) == 2 &&
-          all(info$var[[names[l]]]$dimids == 
-              c(dims$N_LEVELS$id, dims$N_PROF$id)) ) {
-        
-        # Remove metadata fields
-        Mdata[[FWMO]][[mnames[l]]] = NULL
+  
+      # Catch up the error 
+      if (!names[l] %in% names(info$var) ){
+        print (paste(names[l], 'not found in', FWMO)) # 防止读到没有的变量
         mnames[l] = NA
-        
-        # For descriptive meta variables (1 value per profile)
-      } else if (length(info$var[[names[l]]]$dimids) == 1 && 
-                 all(info$var[[names[l]]]$dimids == c(dims$N_PROF$id)) ) {
-
-        if (names[l] == "DIRECTION") {
-          Data[[FWMO]][[names[l]]] = 
-            matrix(rep(unlist(strsplit(Data[[FWMO]][[names[l]]], "")), each=n_levels),
-                   nrow=n_levels, ncol=n_prof)
-        } else {
-          # transform one column variables into matrix 
-          Data[[FWMO]][[names[l]]] = 
-              matrix(rep(Data[[FWMO]][[names[l]]],each=n_levels),
-                     nrow=n_levels, ncol=n_prof)
-        }
-        
-        # Remove metadata fields
-        Mdata[[FWMO]][[mnames[l]]] = NULL
-        mnames[l] = NA
-        
-      # For informational meta variables
-      } else {
-        # Save in metadata structure
-        Mdata[[FWMO]][[mnames[l]]] = Data[[FWMO]][[names[l]]]
-        
-        # Remove data fields
-        Data[[FWMO]][[mnames[l]]] = NULL
-            
         names[l] = NA
       }
+     
+      if (names[l] %in% names(info$var) ){ # check if the variables in the Netcdf file 
+        
+        Data[[FWMO]][[names[l]]] = ncvar_get(info,names[l])
+        Mdata[[FWMO]][[mnames[l]]] = Data[[FWMO]][[names[l]]]
+        
+        # For measured variables
+        if (length(info$var[[names[l]]]$dimids) == 2 &&
+            all(info$var[[names[l]]]$dimids == 
+                c(dims$N_LEVELS$id, dims$N_PROF$id)) ) {
+          
+          # Remove metadata fields
+          Mdata[[FWMO]][[mnames[l]]] = NULL
+          mnames[l] = NA
+          
+        # For descriptive meta variables (1 value per profile)
+        } else if (length(info$var[[names[l]]]$dimids) == 1 && 
+                   all(info$var[[names[l]]]$dimids == c(dims$N_PROF$id)) ) {
+          
+          if (names[l] == "DIRECTION" |  # Check for QC identifier
+              startsWith(names[l],'PROF')) {       # transform qc variables into matrix for "direction_qc" and "profile_qc) 
+            Data[[FWMO]][[names[l]]] = 
+              matrix(rep(unlist(strsplit(Data[[FWMO]][[names[l]]], "")), each=n_levels),
+                     nrow=n_levels, ncol=n_prof)
+          } else {
+            
+            # transform one column variables into matrix 
+            Data[[FWMO]][[names[l]]] = 
+              matrix(rep(Data[[FWMO]][[names[l]]],each=n_levels),
+                     nrow=n_levels, ncol=n_prof)
+          }
+          
+          # Remove metadata fields
+          Mdata[[FWMO]][[mnames[l]]] = NULL
+          mnames[l] = NA
+          
+          # For informational meta variables
+        } else {
+          # Save in metadata structure
+          Mdata[[FWMO]][[mnames[l]]] = Data[[FWMO]][[names[l]]]
+          
+          # Remove data fields
+          Data[[FWMO]][[mnames[l]]] = NULL
+          
+          names[l] = NA
+        } 
+      } 
     } ## end loop amt
-
+    
+      
+	 
     # Remove unused variable names
     names = names[!is.na(names)]
     mnames = mnames[!is.na(mnames)]
     
-    # Add WMO float number to metadata
-    Mdata[[FWMO]]$WMO_NUMBER = floatnum
-    
+
     # CONVERT QUALITY FLAGS TO NUMERIC FORMAT
     for (l in 1:length(names)) {
       if (endsWith(names[l],'_QC') &&  # Check for QC identifier
@@ -144,6 +222,7 @@ load_float_data <- function (float_ids, variables=NULL, float_profs=NULL) {
             matrix(Data[[FWMO]][[names[l]]], nrow=n_levels, ncol=n_prof)
       }
     }
+    
     
     # parse parameter names
     for (l in 1:length(mnames)) {
@@ -180,19 +259,25 @@ load_float_data <- function (float_ids, variables=NULL, float_profs=NULL) {
     Mdata[[FWMO]]$PARAMETER = NULL
     Mdata[[FWMO]]$PARAMETER_DATA_MODE = NULL
  
+    # add information about deploying organization and PI to meta data
+    Mdata[[FWMO]]$WMO_NUMBER = floatnum
+    Mdata[[FWMO]]$ PROJECT_NAME  =   ncvar_get(info,"PROJECT_NAME")[1] 
+    Mdata[[FWMO]]$ PI_NAME  = ncvar_get(info,"PI_NAME")[1] 
+    Mdata[[FWMO]]$ DATA_CENTRE  = ncvar_get(info,"DATA_CENTRE")[1]   
+    
+    
     # CONVERT JULD VARIABLE TO SERIAL DATE (SINCE YEAR 1950)
     # AND SAVE AS 'TIME'
     ## CCC to check date format
 
-    #Data[[FWMO]]$TIME = matrix(as.character(as.Date(Data[[FWMO]]$JULD, origin=as.Date("1950-01-01"))),
-    #                           nrow=n_levels, ncol=n_prof)
-    Data[[FWMO]]$TIME = matrix(nrow=n_levels, ncol=n_prof, 
-      as.character(as.POSIXct(Data[[FWMO]]$JULD*3600*24, 
-                              origin=as.Date("1950-01-01"), tz="UTC"))
-      )
+    Data[[FWMO]]$TIME = matrix(as.character(as.Date(Data[[FWMO]]$JULD, origin=as.Date("1950-01-01"))),
+                               nrow=n_levels, ncol=n_prof)
+   # Data[[FWMO]]$TIME = 
+    #  as.Date(as.POSIXct(Data[[FWMO]]$JULD*3600*24, 
+                      #        origin=as.Date("1950-01-01"), tz="UTC"))
+     # )   # (Since year 1950)
 
     names[length(names)+1] = 'TIME' # Add 'TIME' to list of variable names
-    
     
     if (!is.null(float_profs)) {
       for (l in 1:length(names)) {
@@ -200,10 +285,75 @@ load_float_data <- function (float_ids, variables=NULL, float_profs=NULL) {
         Data[[FWMO]][[names[l]]] = Data[[FWMO]][[names[l]]][,float_profs[[n]]]
       }
     }
-    
+  
     nc_close(info)
+    
+    print(paste("Progress:",n/length(good_float_ids)*100 ,"%" ))
     
   } # end loop good floats
   
-  return(list(Data=Data, Mdata=Mdata))
+
+  if (format!="dataframe"){
+    return(list(Data=Data, Mdata=Mdata))
+  }
+  
+  
+  if (format=="dataframe"){ # convert the data into the data frame format 
+    
+    float_data_list_dtfr= vector("list",
+                                 length(Data)
+    )# Create a list to store the multiple data frame for each float data
+    
+    
+    for (i in 1:length(Data)  ){ # loop for each float data 
+      
+      float_data_single=Data[[i]] # Pull out each float
+      
+      length_float_data=length(  float_data_single$CYCLE_NUMBER)
+      number_variable_float_data=length(float_data_single)
+      
+      
+      # create a matrix to deposite the float data
+      float_data_single_dtfr= matrix (nrow=   length_float_data,
+                                      ncol=   number_variable_float_data
+                                      
+      ) 
+      float_data_single_dtfr=as.data.frame(  float_data_single_dtfr)
+      colnames(float_data_single_dtfr) = names(float_data_single) # names the data frame
+      
+      
+      # loop to tranform the each variable 
+      for (ii in 1:   number_variable_float_data ){  
+        
+        
+        float_data_single_dtfr[,ii]=as.vector(float_data_single[[ii]])
+        
+        
+      } # end loop in number_variable_float_data
+      
+      
+      float_data_single_dtfr$WMOID= names(Data[i])  # add the WMOID in data frame 
+      
+      
+      #  assign data frame into the list array 
+      float_data_list_dtfr[[i]]=  float_data_single_dtfr 
+      names(  float_data_list_dtfr)[i] <-  names(Data[i]) #  name the each element in list 
+      
+    }# end loop in float_data
+    
+    # merge the multiple data frame into the single one
+    tryCatch( {
+      
+      float_data_list_dtfr=bind_rows(float_data_list_dtfr)
+    },  error = function(e){
+      
+      print("data exceeds the memorylimit of dataframe so data isinput as a list containing multiple data frame for each float ")
+    }
+    )
+    
+    
+  return( float_data_list_dtfr)
+    
+    
+  } # end loop format=="dataframe"
 }

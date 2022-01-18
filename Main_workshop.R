@@ -1,66 +1,44 @@
 # Main_workshop.R
+
 # Driver routine for the GO-BGC workshop R tutorial
-# June 28-30, 2021
-# It uses the R toolbox for accessing BGC-Argo float data.
-#
+# June 28-30, 2021 (https://www.youtube.com/watch?v=w_6pEGNXQQ4)
 # Demonstrates the downloading of BGC-Argo float data with sample plots,
 # a discussion of available data, quality control flags etc.
 #
+# UPDATE RECORD: 
+#   Version 1:   June 2021 
+#   Version 1.1: January 2022 
+#
 # CITATION:
-# BGC-Argo-R: A R toolbox for accessing and visualizing
-# Biogeochemical Argo data,
-#
-# AUTHORS: 
-# M. Cornec (LOV), Y. Huang (NOAA-PMEL), Q. Jutard (OSU ECCE TERRA), 
-# R. Sauzede (IMEV) and C. Schmechtig (OSU ECCE TERRA),
-#
-# Adapted from the Matlab toolbox BGC-Argo-Mat:  https://doi.org/10.5281/zenodo.4971318
-# (H. Frenzel, J. Sharp, A. Fassbender (NOAA-PMEL),
-# J. Plant, T. Maurer, Y. Takeshita (MBARI), D. Nicholson (WHOI),
-# and A. Gray (UW))
-
-# Update 24 June 2021
-
+#   M. Cornec (LOV), Y. Huang (NOAA-PMEL), Q. Jutard (OSU ECCE TERRA), R. Sauzede (IMEV) and 
+#   C. Schmechtig (OSU ECCE TERRA), 2021.
+#   BGC-Argo-R: A R toolbox for accessing and visualizing Biogeochemical Argo data. 
+#   Zenodo. http://doi.org/10.5281/zenodo.5028139
 
 
 # Close figures, clean up workspace, clear command window
 cat("\014")
 rm(list = ls())
 
-# Load/Install required libraries
-if (!require("gsw")) { install.packages("gsw"); library(gsw) } # calculate sea water paramters 
-if (!require("R.utils")) { install.packages("R.utils"); library(R.utils) } # gunzip S index file
-if (!require("lubridate")) { install.packages("lubridate"); library(lubridate) } # convert date from Sprof file to date object
-if (!require("Matrix")) { install.packages("Matrix"); library(Matrix) } # create reduced-size matrix to deal with the Synthetic profile Index
-if (!require("ncdf4")) { install.packages("ncdf4"); library(ncdf4) } # deal with netcdf files
 
 # Fill here the path to the code directory, you can instead set the code
 # directory as the working directory with setwd()
 path_code = ""
 
 
-# Load the functions --------------------------------
+# Load the functions and libraries--------------------------------
+setwd(path_code)
+func.sources = list.files(path_code,pattern="*.R")
+func.sources = func.sources[which(func.sources %in% c('Main_workshop.R',
+                                                      "bgc_argo_workshop_R_license.R")==F)]
 
-source(paste0(path_code, "initialize_argo.R"))
-source(paste0(path_code, "try_download.R"))
-source(paste0(path_code, "do_download.R"))
-source(paste0(path_code, "download_float.R"))
-source(paste0(path_code, "download_multi_floats.R"))
-source(paste0(path_code, "check_dir.R"))
-source(paste0(path_code, "get_var_name_units.R"))
-source(paste0(path_code, "select_profiles.R"))
-source(paste0(path_code, "load_float_data.R"))
-source(paste0(path_code, "plot_trajectories.R"))
-source(paste0(path_code, "get_lon_lat_lims.R"))
-source(paste0(path_code, "show_trajectories.R"))
-source(paste0(path_code, "do_pause.R"))
-source(paste0(path_code, "depth_interp.R"))
-source(paste0(path_code, "calc_auxil.R"))
-source(paste0(path_code, "get_multi_profile_mean.R"))
-source(paste0(path_code, "show_profiles.R"))
-source(paste0(path_code, "plot_profiles.R"))
-source(paste0(path_code, "show_sections.R"))
-source(paste0(path_code, "plot_sections.R"))
+if(length(grep("Rproj",func.sources))!=0){
+  func.sources = func.sources[-grep("Rproj",func.sources)]
+}
+invisible(sapply(paste0(func.sources),source,.GlobalEnv))
+
+aux.func.sources = list.files(paste0(path_code,"/auxil"),pattern="*.R")
+invisible(sapply(paste0(path_code,"/auxil/",aux.func.sources),source,.GlobalEnv))
 
 # Exercise 0: Initialize --------------------------------------------------
 # This function defines standard settings and paths and creates Index
@@ -83,6 +61,7 @@ do_pause()
 
 # Example: Look at the profile ID numbers and available sensors for the
 # profiles that have been executed by new GO-BGC float #5906439.
+
 
 float_idx <-which(Float$wmoid=='5906439') # float IDs for float #5906439 in the S_file index
 float_idx 
@@ -118,6 +97,9 @@ float_file
 # Extract informational data from the NetCDF
 names (float_file$var) 
 
+# Close the file
+nc_close(float_file)
+
 do_pause()
 
 # We see that NITRATE is available, so load it (along with TEMP and PSAL) from the NetCDF
@@ -129,8 +111,20 @@ names(data$Data[[paste0('F', WMO)]]) # show data that has been loaded into R
 
 do_pause()
 
+
+# Load the float data in the R with the format of data frame if "format" is specificed
+data_df = load_float_data( float_ids= WMO, # specify WMO number
+                        variables=c('PSAL','TEMP','NITRATE'), # specify variables,
+                        format="dataframe" # specify format;  
+)
+
+colnames(data_df) # show data that has been loaded into R
+
+
 # Show the trajectory of the downloaded float
-show_trajectories(float_ids=WMO)
+show_trajectories(float_ids=WMO, 
+                  return_ggplot="True" # return the plot to ggplot panel
+                  )
 
 do_pause()
 
@@ -138,25 +132,24 @@ do_pause()
 # this plots the raw, unadjusted data, and includes multiple profiles 
 # compromised by biofouling that has affected the optics.
 
-show_profiles( profile_ids=WMO, 
+show_profiles( float_ids=WMO, 
                variables=c('PSAL','NITRATE'),
-               type="floats", # given IDs refer to the floats
                obs='on', # 'on' shows points on the profile at which each measurement was made
-               raw="yes" # show the unadjusted data 
+               raw="yes" # show the unadjusted data ,
+              
 )
 
 
 # this plots the adjusted data.
-show_profiles(profile_ids=WMO, 
+show_profiles(float_ids=WMO, 
               variables=c('PSAL','NITRATE'),
-              type="floats", # given IDs refer to the floats
               obs='on', # 'on' shows points on the profile at which each measurement was made
+              raw="no",
 )
 
 # this plots the adjusted, good (qc flag 1) and probably-good (qc flag 2) data.
-show_profiles(profile_ids=WMO, 
+show_profiles(float_ids = WMO, 
               variables=c('PSAL','NITRATE'),
-              type="floats", # given IDs refer to the floats
               obs='on', # 'on' shows points on the profile at which each measurement was made
               qc_flags =c(1:2) # tells the function to plot good and probably-good data
 )
@@ -188,7 +181,7 @@ do_pause()
 
 ## Clean up the workspace
 cat("\014")
-rm (list= c("data","float_file","success","WMO")) 
+rm (list= c("data","float_file","success","WMO","data_df")) 
 
 
 # Exercise 2: Ocean Station Papa floats -----------------------------------
@@ -221,9 +214,16 @@ OSP_data= select_profiles ( lon_lim,
 
 
 # Display the number of matching floats and profiles
-print(paste('# of matching profiles:',length(OSP_data$profiles)))
+print(paste('# of matching profiles:',sum(lengths(OSP_data$float_profs))))
 
-print(paste('# of matching floats:',length(OSP_data$floats)))
+print(paste('# of matching floats:',length(OSP_data$float_ids)))
+
+# Load the data for the matching float with format of data frame
+data_OSP_df= load_float_data( float_ids= OSP_data$float_ids, # specify WMO number
+                           float_profs=OSP_data$float_profs, # specify selected profiles
+                            variables="ALL", # load all the variables
+                            format="dataframe" # specify format;  
+)
 
 
 # Show trajectories for the matching floats
@@ -231,7 +231,7 @@ print(paste('# of matching floats:',length(OSP_data$floats)))
 # files have already been downloaded) and then loads the data for plotting.
 # Adding the optional input pair 'color','multiple' will plot different
 # floats in different colors
-trajectory = show_trajectories(float_ids = OSP_data$floats,
+trajectory = show_trajectories(float_ids = OSP_data$float_ids,
                                return_ggplot = TRUE #do not plot and return a ggplot object
 ) # this plots different floats in different colors
 
@@ -256,18 +256,16 @@ do_pause()
 
 # Case #1: all profiles from one float (1)
 
-show_profiles(profile_ids=OSP_data$floats[1], 
+show_profiles(float_ids=OSP_data$float_ids[1], 
               variables=c('PSAL','DOXY'),
-              type="floats", # given IDs refer to the floats
               obs='on',# 'on' shows points on the profile at which
-              #  each measurement was made
+                       #  each measurement was made
 )
 
 # Case #2: mean and standard deviation of all profiles from one float (1)
 
-show_profiles(profile_ids=OSP_data$floats[1], 
+show_profiles(float_ids=OSP_data$float_ids[1], 
               variables=c('PSAL','DOXY'),
-              type="floats", # given IDs refer to the floats
               obs='on', # 'on' shows points on the profile at which
               #  each measurement was made
               method="mean" # this tells the function to just plot the mean profile
@@ -276,7 +274,7 @@ show_profiles(profile_ids=OSP_data$floats[1],
 do_pause()
 
 # clean up the workspace
-rm (list= c("OSP_data")) 
+rm (list= c("OSP_data","data_OSP_df")) 
 
 
 # Exercise 3: Hawaii floats -----------------------------------------------
@@ -305,16 +303,17 @@ HW_data= select_profiles ( lon_lim,
 
 
 # display the number of matching floats and profiles
-print(paste('# of matching profiles:',length(HW_data$profiles)))
+print(paste('# of matching profiles:',sum(lengths(HW_data$float_profs))))
 
-print(paste('# of matching floats:',length(HW_data$floats)))
+print(paste('# of matching floats:',length(HW_data$float_ids)))
 
 
 # Show trajectories for the matching floats, along with the geo limits
 # This function downloads the specified floats from the GDAC (unless the
 # files have already been downloaded) and then loads the data for plotting.
 
-trajectory = show_trajectories(float_ids=HW_data$floats, return_ggplot=TRUE)  # this plots different floats in different colors
+trajectory = show_trajectories(float_ids=HW_data$float_ids, 
+                               return_ggplot=TRUE)  # this plots different floats in different colors
 
 x11() # new window
 plot(trajectory)
@@ -337,22 +336,31 @@ do_pause()
 
 # Show matching profiles from all floats
 # Show profiles (from all floats) within specified domain and times
-show_profiles( profile_ids=HW_data$floats, 
+show_profiles( float_ids=HW_data$float_ids, 
                variables=c('PSAL','DOXY'),
-               type="floats",  # given IDs refer to the floats
-               per_float=0,  # show all profiles in one plot:
+               float_profs=HW_data$float_profs,
+               per_float=F,  # show all profiles in one plot
                qc_flags =c(1,2) # tells the function to plot good and probably-good data
 )
 
 do_pause()
 
-# Show only matching profiles from September
-prof_ids_September =   which (month( Sprof$date)==9) # find the profiles measured in September in global float index
-HW_profiles_Sep =  HW_data$profiles [which ( (HW_data$profiles %in%  prof_ids_September)=="TRUE") ]  # determine profiles that occur in September
-show_profiles( profile_ids=HW_profiles_Sep, 
+## Show only matching profiles from September
+# determine profiles that occur in September for each float separately
+date<-get_lon_lat_time(float_ids=HW_data$float_ids,
+                       float_profs=HW_data$float_profs)$time
+
+HW_float_profs_Sep<-list()
+for (f in 1:length(HW_data$float_ids)){
+  HW_float_profs_Sep[[f]] <-
+    HW_data$float_profs[[f]][which(month(as.POSIXct(date[[f]]))==9)]
+  
+}
+
+show_profiles( float_ids=HW_data$float_ids, 
                variables=c('PSAL','DOXY'),
-               type="profiles", # given IDs refer to the profiles
-               per_float=0,  # show all profiles in one plot:
+               float_profs = HW_float_profs_Sep, 
+               per_float=F,  # show all profiles in one plot:
                obs='on', # plot a marker at each observation
                qc_flags=c(1,2),  # apply QC flags
                title_add= 'September' 
@@ -364,7 +372,7 @@ do_pause()
 # this shows the raw, unadjusted data 
 # mixed layer depth is shown based on the temperature threshold
 # (set the value to 2 after 'mld' to use the density threshold instead)
-show_sections( float_ids=HW_data$floats[5], 
+show_sections( float_ids=HW_data$float_ids[5], 
                variables=c('PH_IN_SITU_TOTAL','DOXY'),
                plot_mld=1,   # tells the function to plot mixed layer depth
                raw="yes" # tells the function to plot raw (unadjusted) data
@@ -374,7 +382,7 @@ do_pause()
 
 # Show sections for pH and oxygen for the fifth float in the list of Hawaii floats
 # this shows the adjusted data
-show_sections( float_ids=HW_data$floats[5], 
+show_sections( float_ids=HW_data$float_ids[5], 
                variables=c('PH_IN_SITU_TOTAL','DOXY'),
                plot_mld=1,   # tells the function to plot mixed layer depth
                raw="no"  # tells the function to plot adjusted data
