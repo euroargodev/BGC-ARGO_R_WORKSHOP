@@ -57,8 +57,8 @@ try_download.R           : attempts to download a file from any of the specified
 You can open the corresponding R script file to check out the description of input and output parameters for individual functions. 
 
 ## UPDATE RECORD
-Version 1: June 2021<br/>
-Version 1.1: January 2022
+Version 1 & 2: June 2021<br/>
+Version 2.1: January 2022
 
 ## COMMENTS, BUGS etc.?
 Please feel free to use the GitHub Issues and Pull Requests features to report any problems with this code and to suggest bug fixes.
