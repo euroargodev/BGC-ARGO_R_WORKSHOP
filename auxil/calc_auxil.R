@@ -38,8 +38,8 @@ calc_auxil <- function(Data, calc_dens=0, calc_mld_temp=0, temp_thresh=0.2, calc
   #                 density threshold)
   #
   # UPDATE RECORD: 
-  #   Version 1:   June 2021 
-  #   Version 1.1: January 2022 
+  #   Version 1 & 2:   June 2021 
+  #   Version 2.1: January 2022 
   #
   # CITATION:
   #   M. Cornec (LOV), Y. Huang (NOAA-PMEL), Q. Jutard (OSU ECCE TERRA), R. Sauzede (IMEV) and 

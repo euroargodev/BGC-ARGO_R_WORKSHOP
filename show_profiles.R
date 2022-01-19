@@ -63,9 +63,9 @@ show_profiles=function( float_ids,
   #                    vectors if per_float is set to 1,
   #                    column vector if per_float is 0)
   #
-  # Update record: 
-  #   Version 1: 24 June 2021 
-  #   Version 1.1: January 2022 
+  # UPDATE RECORD: 
+  #   Version 1 & 2:   June 2021 
+  #   Version 2.1: January 2022 
   
   # CITATION:
   #   M. Cornec (LOV), Y. Huang (NOAA-PMEL), Q. Jutard (OSU ECCE TERRA), R. Sauzede (IMEV) and 

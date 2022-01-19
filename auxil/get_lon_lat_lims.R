@@ -24,8 +24,8 @@ get_lon_lat_lims <- function(Data) {
   #              it is unchanged from the input otherwise
   #
   # UPDATE RECORD: 
-  #   Version 1:   June 2021 
-  #   Version 1.1: January 2022 
+  #   Version 1 & 2:  June 2021 
+  #   Version 2.1: January 2022  
   #
   # CITATION:
   #   M. Cornec (LOV), Y. Huang (NOAA-PMEL), Q. Jutard (OSU ECCE TERRA), R. Sauzede (IMEV) and 

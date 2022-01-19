@@ -60,8 +60,8 @@ select_profiles <- function(lon_lim=c(-180,180),
   #
   #
   # UPDATE RECORD: 
-  #   Version 1:   June 2021 
-  #   Version 1.1: January 2022 
+  #   Version 1 & 2:   June 2021 
+  #   Version 2.1: January 2022 
   #
   # CITATION:
   #   M. Cornec (LOV), Y. Huang (NOAA-PMEL), Q. Jutard (OSU ECCE TERRA), R. Sauzede (IMEV) and 
