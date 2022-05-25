@@ -20,14 +20,13 @@ get_lon_lat_time=function(float_ids, float_profs=NULL){
   #     datenum format)   
   #
   # UPDATE RECORD: 
-  #   Version 1:   June 2021 
-  #   Version 1.1: January 2022 
+  #   Version 3.0: May 2022
   #
   # CITATION:
-  #   M. Cornec (LOV), Y. Huang (NOAA-PMEL), Q. Jutard (OSU ECCE TERRA), R. Sauzede (IMEV) and 
+  #   M. Cornec (LOV, now at NOAA-PMEL), Y. Huang (NOAA-PMEL), Q. Jutard (OSU ECCE TERRA), R. Sauzede (IMEV) and 
   #   C. Schmechtig (OSU ECCE TERRA), 2021.
   #   BGC-Argo-R: A R toolbox for accessing and visualizing Biogeochemical Argo data. 
-  #   Zenodo. http://doi.org/10.5281/zenodo.5028139
+  #   Zenodo. http://doi.org/10.5281/zenodo.5028138
   
   lon=NULL
   lat=NULL

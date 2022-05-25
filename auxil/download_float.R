@@ -15,6 +15,7 @@ download_float<-function(floatid) {
   # UPDATE RECORD: 
   #   Version 1 & 2:   June 2021 
   #   Version 2.1: January 2022 
+  #   Version 3.0: May 2022
   #
   # CITATION:
   #   M. Cornec (LOV, now at NOAA-PMEL), Y. Huang (NOAA-PMEL), Q. Jutard (OSU ECCE TERRA), R. Sauzede (IMEV) and 

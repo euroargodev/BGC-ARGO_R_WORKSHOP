@@ -57,6 +57,7 @@ plot_sections <- function(Data,
   # UPDATE RECORD: 
   #   Version 1 & 2:   June 2021 
   #   Version 2.1: January 2022 
+  #   Version 3.0: May 2022
   #
   # CITATION:
   #   M. Cornec (LOV, now at NOAA-PMEL), Y. Huang (NOAA-PMEL), Q. Jutard (OSU ECCE TERRA), R. Sauzede (IMEV) and 
@@ -264,8 +265,18 @@ plot_sections <- function(Data,
         labs(title = paste0("Float ", Mdata[[float_ids[f]]]$WMO_NUMBER,": ",
                             long_name, title_add),
              x = "Time",
-             y = "Pressure (dbar)",
+             y = "Pressure (dbar)",face = 'bold',family = "serif",
              fill = units)
+      g1= g1+theme (axis.title.y = element_text(size=16,colour = "black",face = "bold",family = "serif") ) 
+      g1= g1+theme (axis.title.x = element_text(size=16,colour = "black",face = "bold",family = "serif") ) 
+      g1= g1+theme (axis.text.y = element_text(size=16,colour = "black",face = "bold",family = "serif") ) 
+      g1= g1+theme (axis.text.x = element_text(size=16,colour = "black",face = "bold",family = "serif") )
+      g1=g1+theme(legend.text = element_text(size = 16,face = 'bold',family = "serif"),
+                  legend.title  = element_text(size = 16,face = 'bold',family = "serif"),
+                  legend.key.width=unit(1,'cm'),
+                  legend.key.height=unit(1,'cm'))#
+      g1=g1+theme(plot.title = element_text(size = 16, face = "bold",family = "serif"))
+      
       
       x11()
       plot(g1)
