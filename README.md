@@ -29,6 +29,7 @@ initialize_argo.R        : defines standard settings and paths and downloads syn
 load_float_data.R        : loads data of one or more specified float(s) into memory<br/>
 select_profiles.R        : returns profiles and corresponding floats based on input criteria<br/>
 show_profiles.R          : downloads float data and calls plot_profiles to create plot<br/>
+show_time_series.R       : downloads float data and calls plot_profiles to create plot<br/>
 show_sections.R          : downloads float data and calls plot_sections to create plot<br/>
 show_trajectories.R      : downloads float data and calls plot_trajectories to create plot<br/>
 get_lon_lat_time.R       : extracts the longitude, latitude, and time information for the specified floats)<br/>
@@ -49,6 +50,7 @@ get_multi_profile_mean   : calculates the mean profile of multiple profiles<br/>
 get_var_name_units.R     : returns the long variable name and units name for a given short parameter name input<br/>
 load_library.R           : load/install the required functions<br/>
 plot_profiles.R          : plots profiles of one or more specified float(s) for the specified variable(s)<br/>
+plot_time_series.R       : plots time-series of one or more specified float(s) for the specified variable(s)<br/>
 plot_sections.R          : plots sections of one or more specified float(s) for the specified variable(s)<br/>
 plot_trajectories.R      : plots trajectories of one or more specified float(s)<br/>
 try_download.R           : attempts to download a file from any of the specified GDACs<br/>
