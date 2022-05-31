@@ -1,5 +1,5 @@
 # BGC-Argo toolbox for R
-[![DOI]https://zenodo.org/badge/DOI/10.5281/zenodo.5028138.svg](https://doi.org/10.5281/zenodo.5028138)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5028138.svg)](https://doi.org/10.5281/zenodo.5028138)
 
 ## IMPORTANT NOTE
 
@@ -74,7 +74,7 @@ Please feel free to use the GitHub Issues and Pull Requests features to report a
 
 ## TOOLBOX IN OTHER LANGUAGES
 This toolbox has been translated from MATLAB:<br/>
-[[MATLAB toolbox](https://github.com/NOAA-PMEL/BGC_Argo_Mat_Toolbox)
+[MATLAB toolbox](https://github.com/NOAA-PMEL/BGC_Argo_Mat_Toolbox)
 
 A similar toolbox in Python:<br/>
 [Python toolbox](https://github.com/go-bgc/workshop-python)
