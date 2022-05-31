@@ -1,11 +1,17 @@
 # BGC-Argo toolbox for R
+[![DOI]https://zenodo.org/badge/DOI/10.5281/zenodo.5028138.svg](https://doi.org/10.5281/zenodo.5028138)
+
+## IMPORTANT NOTE
+
+This is the final release of this toolbox under the BGC-Argo-Mat name. All future development will be done under the [OneArgo-R](https://github.com/NOAA-PMEL/OneArgo-R) name.
 
 ## ABOUT
 This toolbox contains a variety of functions for accessing, processing, and visualizing Biogeochemical Argo data. Functions are designed to be maximally efficient, to provide access to the most up-to-date data available, and to allow for downloading and plotting of those data based on numerous user-defined conditions. 
 
 This toolbox is created and maintained by M. Cornec (LOV, now at NOAA-PMEL), Y. Huang (NOAA-PMEL), Q. Jutard (OSU ECCE TERRA), R. Sauzede (IMEV) and C. Schmechtig (OSU ECCE TERRA), 2021 (All authors contributed equally to the code.)
 
-This toolbox is adapted from the BGC-Argo-Mat Toolbox: H. Frenzel*, J. Sharp*, A. Fassbender, J. Plant, T. Maurer, Y. Takeshita, D. Nicholson, A. Gray, 2021.
+This toolbox is adapted from the BGC-Argo-Mat Toolbox [MATLAB toolbox](https://github.com/NOAA-PMEL/BGC_Argo_Mat_Toolbox): 
+H. Frenzel*, J. Sharp*, A. Fassbender, J. Plant, T. Maurer, Y. Takeshita, D. Nicholson, A. Gray, 2021.
 BGC-Argo-Mat: A MATLAB toolbox for accessing and visualizing Biogeochemical Argo data. Zenodo. https://doi.org/10.5281/zenodo.4971318.
 
 ## REQUIREMENTS
@@ -20,7 +26,7 @@ This repository can be cloned using the command line or GitHub Desktop. Or the f
 
 Before use, make sure the files are placed in a directory that is in the R search path. Or add the directory where they are located to the search path https://support.rstudio.com/hc/en-us/articles/200711843-Working-Directories-and-Workspaces. Or run it in the directory where the main_workshop script was placed.
 
-For an overview of how to use this toolbox, step through the 'main_workshop' script (launching it in the R Console, or in the Rstudio console using the Run button or Ctrl+Alt+Enter, the Run All shortcut in R studio), a tutorial that was developed for the 2021 GO-BGC Scientific Workshop (6/30/21).
+For an overview of how to use this toolbox, step through the 'Main_workshop' script (launching it in the R Console, or in the Rstudio console using the Run button or Ctrl+Alt+Enter, the Run All shortcut in R studio), a tutorial that was developed for the 2021 GO-BGC Scientific Workshop (6/30/21).
 
 ## FUNCTIONS
 
@@ -33,7 +39,7 @@ show_time_series.R       : downloads float data and calls plot_profiles to creat
 show_sections.R          : downloads float data and calls plot_sections to create plot<br/>
 show_trajectories.R      : downloads float data and calls plot_trajectories to create plot<br/>
 get_lon_lat_time.R       : extracts the longitude, latitude, and time information for the specified floats)<br/>
-main_workshop.R          : tutorial script for GO-BGC Scientific Workshop (6/30/21)<br/>
+Main_workshop.R          : tutorial script for GO-BGC Scientific Workshop (6/30/21)<br/>
 ### Background functions (primarily called by main functions in background):
 
 calc_auxil.R             : calculates various auxiliary variables from Argo float data<br/>
@@ -60,10 +66,18 @@ You can open the corresponding R script file to check out the description of inp
 
 ## UPDATE RECORD
 Version 1 & 2: June 2021<br/>
-Version 2.1: January 2022
+Version 2.1: January 2022<br/>
+Version 3.0: May 2022
 
 ## COMMENTS, BUGS etc.?
 Please feel free to use the GitHub Issues and Pull Requests features to report any problems with this code and to suggest bug fixes.
+
+## TOOLBOX IN OTHER LANGUAGES
+This toolbox has been translated from MATLAB:<br/>
+[[MATLAB toolbox](https://github.com/NOAA-PMEL/BGC_Argo_Mat_Toolbox)
+
+A similar toolbox in Python:<br/>
+[Python toolbox](https://github.com/go-bgc/workshop-python)
 
 ## TOOLBOX VIDEO TUTORIAL
 https://www.youtube.com/watch?v=w_6pEGNXQQ4&feature=youtu.be

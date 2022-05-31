@@ -7,6 +7,17 @@ either per float or with multiple floats in one plot. If it is used
 to plot each float's time series separately, a second variable can
 be plotted for comparison.
 
+The missing function get_lon_lat_time required in the Main_workshop 
+has been added (load the lon, lat and time from specified floats).
+The plot functions and get_multi_profile_mean were corrected to be able 
+to deal with selections of floats that does not all show the wanted variables.
+
+A bug in the plot_profile function were corrected in order to actually 
+plot all profiles of selected floats (and not only one float data).
+
+The depth_interp function was modified so it can now skip profiles with 
+not enough PRES values.
+
 
 Version 2.1 (January 2022)
 
