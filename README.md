@@ -10,7 +10,7 @@ This toolbox contains a variety of functions for accessing, processing, and visu
 
 This toolbox is created and maintained by M. Cornec (LOV, now at NOAA-PMEL), Y. Huang (NOAA-PMEL), Q. Jutard (OSU ECCE TERRA), R. Sauzede (IMEV) and C. Schmechtig (OSU ECCE TERRA), 2021 (All authors contributed equally to the code.)
 
-This toolbox is adapted from the BGC-Argo-Mat Toolbox [MATLAB toolbox](https://github.com/NOAA-PMEL/BGC_Argo_Mat_Toolbox): 
+This toolbox is adapted from the [BGC-Argo-Mat](https://github.com/NOAA-PMEL/BGC_Argo_Mat_Toolbox) MATLAB Toolbox: 
 H. Frenzel*, J. Sharp*, A. Fassbender, J. Plant, T. Maurer, Y. Takeshita, D. Nicholson, A. Gray, 2021.
 BGC-Argo-Mat: A MATLAB toolbox for accessing and visualizing Biogeochemical Argo data. Zenodo. https://doi.org/10.5281/zenodo.4971318.
 
